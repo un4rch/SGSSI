@@ -1,3 +1,2 @@
 # Seguridad
-ua
-n4rch
+un4rch
