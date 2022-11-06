@@ -13,6 +13,8 @@ read -p "Option:" option
 
 # Instalar dependencias
 #sudo apt install apache2 mod_ssl openssl
+#sudo pacman -Rncs apache
+#sudo pacman -S apache
 
 
 if [[ "$option" == "I" ]]; then
