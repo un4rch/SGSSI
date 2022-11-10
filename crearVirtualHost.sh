@@ -3,7 +3,7 @@ config="/etc/apache2/sites-enabled/example.conf"
 #sudo rm /ect/apahce2/sites-enabled/*
 sudo touch $config
 
-#rsync --link-dest=AYER <proyecto> HOY
+#rsync -av --link-dest=AYER <proyecto> HOY
 
 #ssh-keygen -t rsa -b 2048
 
