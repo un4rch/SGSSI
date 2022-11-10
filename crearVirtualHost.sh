@@ -1,6 +1,13 @@
 ipaddr=$(ip addr | grep "inet " | cut -d " " -f 6 | cut -d "/" -f 1 | grep -v -E "^127|^172")
 config="/etc/apache2/sites-enabled/example.conf"
+#sudo rm /ect/apahce2/sites-enabled/*
 sudo touch $config
+
+#ssh-keygen -t rsa -b 2048
+
+#/var/spool/cron/<crontabs>
+#sudo systemctl start/enable cronie
+#min hora diames mes diasemana ruta_script
 
 grep "SSLCertificateFile /etc/pki/tls/certs/certificado.crt" $config &> /dev/null
 if [[ "$?" == "0" ]]; then
@@ -20,6 +27,7 @@ if [[ "$option" == "I" ]]; then
         echo "[*] Instalando dependencias"
         sudo apt install apache2 openssl -y &> /dev/null
         sudo a2enmod ssl
+        #sudo a2enmod rewrite
 
         # HTML index test
         sudo mkdir -p /var/www/html/
@@ -31,8 +39,10 @@ if [[ "$option" == "I" ]]; then
         # Add VirtualHost info to httpd configuration on port 443
         grep "SSLCertificateFile /etc/pki/tls/certs/certificado.crt" $config &> /dev/null
         if [[ "$?" != "0"  ]]; then
-                sudo sh -c 'echo "127.0.0.1     www.ejemplo.com" >> /etc/hosts'
-                #sudo sh -c 'echo "Listen 443" >> /etc/httpd/conf/httpd.conf'
+                sudo sh -c 'echo "<VirtualHost *:80>" >> '$config
+                sudo sh -c 'echo "      Redirect / https://'$(curl ifconfig.me)'" >> '$config
+                sudo sh -c 'echo "</VirtualHost>" >> '$config
+                sudo sh -c 'echo "" >> '$config
                 sudo sh -c 'echo "<VirtualHost *:443>" >> '$config
                 sudo sh -c 'echo "      SSLEngine on" >> '$config
                 sudo sh -c 'echo "      SSLCertificateFile /etc/pki/tls/certs/certificado.crt" >> '$config
@@ -42,8 +52,6 @@ if [[ "$option" == "I" ]]; then
                 sudo sh -c 'echo "      <Directory /var/www/html/>" >> '$config
                 sudo sh -c 'echo "              AllowOverride all" >> '$config
                 sudo sh -c 'echo "      </Directory>" >> '$config
-                sudo sh -c 'echo "      ServerName www.ejemplo.com" >> '$config
-                sudo sh -c 'echo "      ServerAlias ejemplo.com" >> '$config
                 sudo sh -c 'echo "      DocumentRoot /var/www/html/" >> '$config
                 sudo sh -c 'echo "      ErrorLog /var/log/apache2/error.log" >> '$config
                 sudo sh -c 'echo "      LogLevel warn" >> '$config
@@ -71,7 +79,7 @@ if [[ "$option" == "I" ]]; then
         # Restart httpd server
         sudo systemctl restart apache2
         echo -e "\nHttps server listening on:"
-        echo -e "\t[*] https://$(curl ifconfig.co/):443 (usando la ip publica)"
+        echo -e "\t[*] https://$(curl ifconfig.me/):443 (usando la ip publica)"
         echo -e "\t[*] https://www.ejemplo.com:443 (usando un alias)"
         echo -e "\t[*] https://$ipaddr:443 (usando la ip privada)"
 
@@ -85,25 +93,15 @@ if [[ "$option" == "U" ]]; then
         else
                 sudo systemctl restart apache2
         fi
-        grep "SSLCertificateFile /etc/pki/tls/certs/certificado.crt" $config &> /dev/null
+        cat $config &> /dev/null
         if [[ "$?" == "0" ]]; then
-                lines=$(wc -l $config | cut -d " " -f 1)
-                lines=$(($lines-16))
-                sudo head $config -n $lines > tmp.txt
-                sudo mv tmp.txt $config
-        fi
-        grep "www.ejemplo.com" /etc/hosts &> /dev/null
-        if [[ "$?" == "0" ]]; then
-                lines=$(wc -l /etc/hosts | cut -d " " -f 1)
-                lines=$(($lines-1))
-                sudo head /etc/hosts -n $lines > tmp.txt
-                sudo mv tmp.txt /etc/hosts
+                sudo rm $config
         fi
         sudo rm /etc/pki/tls/certs/certificado.crt &> /dev/null
         sudo rm /etc/pki/tls/private/llave.key &> /dev/null
         sudo rm /etc/pki/ca-trust/extracted/pem/server.csr &> /dev/null
-        sudo rm $config
         sudo chmod 755 -R /var/www/html/
+        sudo systemctl restart apache2
 fi
 if [[ "$option" == "S" ]]; then
         systemctl status apache2
