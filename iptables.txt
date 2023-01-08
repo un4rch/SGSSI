@@ -1,0 +1,20 @@
+CHAIN INPUT    --> Reglas para los paquetes que entran a la maquina
+CHAIN FORDWARD --> Reglas para los paquetes que se transmiten
+CHAIN OUTPUT   --> Reglas para los paquetes que salen de la maquina
+policy:
+    ACCEPT --> Aceptar los paquetes
+    DROP --> Denegar los paquetes
+
+sudo iptables -nL
+    Listar todas las reglas activas
+sudo iptables -F
+    Eliminar todas las reglas activas
+sudo iptables -P <chain> <policy>
+    Cambiar la politica de un canal
+    Ejemplo: sudo iptables -P INPUT ACCEPT
+sudo iptables -D <chain> <n>
+    Eliminar la n-ava regla de un canal (empezando por n=1)
+sudo iptables -A <chain> -s <source> -p <protocol> --dport -j <poicy>
+    Anadir una regla a un canal
+    Ejemplo: sudo iptables -A INPUT -s 192.168.1.0/24 -j ACCEPT
+             Aceptar todos los paquetes que vengan de esa subred 
