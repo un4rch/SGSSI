@@ -3,7 +3,7 @@ Copia de seguridad en servidor remoto:
     ayer=$(date -d yesterday +"%d_%m_%Y")
     hoy=$(date -d today +"%d_%m_%Y")
     proyecto=""
-    rsync -avrP --link-dest=un4rch@34.116.172.151:/$ayer un4rch@34.116.172.151:/$carpeta --link-dest=un4rch@34.116.172.151:/$hoy
+    rsync -avrP --link-dest=un4rch@34.116.172.151:/$ayer un4rch@34.116.172.151:/$carpeta un4rch@34.116.172.151:/$hoy
 
 CHAIN INPUT    --> Reglas para los paquetes que entran a la maquina
 CHAIN FORDWARD --> Reglas para los paquetes que se transmiten
